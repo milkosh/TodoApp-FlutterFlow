@@ -137,6 +137,8 @@ class _DetailsWidgetState extends State<DetailsWidget> {
                                         .headlineLarge
                                         .fontStyle,
                                   ),
+                                  color: FlutterFlowTheme.of(context)
+                                      .secondaryText,
                                   letterSpacing: 0.0,
                                   fontWeight: FlutterFlowTheme.of(context)
                                       .headlineLarge
