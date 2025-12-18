@@ -1,4 +1,5 @@
 import '/auth/firebase_auth/auth_util.dart';
+import '/backend/api_requests/api_calls.dart';
 import '/backend/backend.dart';
 import '/components/add_task_widget.dart';
 import '/components/task_widget.dart';
@@ -7,7 +8,9 @@ import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/index.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:simple_gradient_text/simple_gradient_text.dart';
 import 'tasks_model.dart';
 export 'tasks_model.dart';
 
@@ -30,6 +33,21 @@ class _TasksWidgetState extends State<TasksWidget> {
   void initState() {
     super.initState();
     _model = createModel(context, () => TasksModel());
+
+    // On page load action.
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      _model.apiResultw2i = await ZenQuotesRandomCall.call();
+
+      if ((_model.apiResultw2i?.succeeded ?? true)) {
+        _model.quoteText = ZenQuotesRandomCall.quote(
+          (_model.apiResultw2i?.jsonBody ?? ''),
+        )!;
+        _model.quoteAuthor = ZenQuotesRandomCall.author(
+          (_model.apiResultw2i?.jsonBody ?? ''),
+        )!;
+        safeSetState(() {});
+      }
+    });
 
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
@@ -73,20 +91,23 @@ class _TasksWidgetState extends State<TasksWidget> {
           },
           backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
           elevation: 0.0,
-          child: Container(
-            width: double.infinity,
-            height: double.infinity,
-            decoration: BoxDecoration(
-              color: FlutterFlowTheme.of(context).primary,
-              borderRadius: BorderRadius.circular(50.0),
-              border: Border.all(
-                width: 1.0,
+          child: Opacity(
+            opacity: 0.6,
+            child: Container(
+              width: double.infinity,
+              height: double.infinity,
+              decoration: BoxDecoration(
+                color: FlutterFlowTheme.of(context).primary,
+                borderRadius: BorderRadius.circular(50.0),
+                border: Border.all(
+                  width: 1.0,
+                ),
               ),
-            ),
-            child: Icon(
-              Icons.add_rounded,
-              color: FlutterFlowTheme.of(context).primaryText,
-              size: 30.0,
+              child: Icon(
+                Icons.add_rounded,
+                color: FlutterFlowTheme.of(context).primaryText,
+                size: 30.0,
+              ),
             ),
           ),
         ),
@@ -252,6 +273,65 @@ class _TasksWidgetState extends State<TasksWidget> {
                         },
                       );
                     },
+                  ),
+                ),
+                Container(
+                  width: double.infinity,
+                  height: 150.0,
+                  decoration: BoxDecoration(
+                    color: FlutterFlowTheme.of(context).secondaryBackground,
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      GradientText(
+                        _model.quoteText,
+                        style:
+                            FlutterFlowTheme.of(context).headlineSmall.override(
+                                  font: GoogleFonts.inter(
+                                    fontWeight: FlutterFlowTheme.of(context)
+                                        .headlineSmall
+                                        .fontWeight,
+                                    fontStyle: FontStyle.italic,
+                                  ),
+                                  letterSpacing: 0.0,
+                                  fontWeight: FlutterFlowTheme.of(context)
+                                      .headlineSmall
+                                      .fontWeight,
+                                  fontStyle: FontStyle.italic,
+                                ),
+                        colors: [
+                          FlutterFlowTheme.of(context).primary,
+                          FlutterFlowTheme.of(context).secondary
+                        ],
+                        gradientDirection: GradientDirection.ltr,
+                        gradientType: GradientType.linear,
+                      ),
+                      GradientText(
+                        _model.quoteAuthor,
+                        style: FlutterFlowTheme.of(context)
+                            .headlineMedium
+                            .override(
+                              font: GoogleFonts.inter(
+                                fontWeight: FlutterFlowTheme.of(context)
+                                    .headlineMedium
+                                    .fontWeight,
+                                fontStyle: FontStyle.italic,
+                              ),
+                              letterSpacing: 0.0,
+                              fontWeight: FlutterFlowTheme.of(context)
+                                  .headlineMedium
+                                  .fontWeight,
+                              fontStyle: FontStyle.italic,
+                            ),
+                        colors: [
+                          FlutterFlowTheme.of(context).primary,
+                          FlutterFlowTheme.of(context).secondary
+                        ],
+                        gradientDirection: GradientDirection.ltr,
+                        gradientType: GradientType.linear,
+                      ),
+                    ],
                   ),
                 ),
               ].divide(SizedBox(height: 12.0)),
